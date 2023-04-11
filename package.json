@@ -1,0 +1,26 @@
+{
+  "name": "todo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^4.15.0",
+    "autoprefixer": "10.4.14",
+    "bootstrap": "^5.2.3",
+    "codehooks-crudlify": "^1.0.8",
+    "codehooks-js": "^1.0.10",
+    "next": "13.3.0",
+    "postcss": "8.4.21",
+    "query-to-mongo": "^0.10.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "reactstrap": "^9.1.8",
+    "tailwindcss": "3.3.1",
+    "yup": "^1.0.2"
+  }
+}
