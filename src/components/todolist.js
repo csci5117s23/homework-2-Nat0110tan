@@ -55,7 +55,7 @@ export default function TodoItem({
   const preview = content.length > 30 ? `${content.substring(0, 30)}...` : content;
   return (
     <div key={id}>
-      <Link href={`todo/${id}`}>
+      <Link href={`/todo/${id}`}>
         <h1>{preview}</h1>
         <h2>Created date: {createdOn}</h2>
         <h2>Category: {category}</h2>

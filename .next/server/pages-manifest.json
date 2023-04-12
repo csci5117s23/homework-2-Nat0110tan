@@ -2,5 +2,9 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/done": "pages/done.js"
+  "/todos": "pages/todos.js",
+  "/done": "pages/done.js",
+  "/todo/[item]": "pages/todo/[item].js",
+  "/todos/[category]": "pages/todos/[category].js",
+  "/done/[category]": "pages/done/[category].js"
 }
