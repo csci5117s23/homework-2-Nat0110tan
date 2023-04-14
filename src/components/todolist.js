@@ -38,6 +38,7 @@ export default function TodoItem({
         createdOn: createdOn,
         _id: id,
         completed: true,
+        userid: userId,
       }),
     });
     fetchData(token);

@@ -6,6 +6,10 @@ import { useAuth, UserButton, SignIn } from "@clerk/nextjs";
 export default function category() {
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [content, setContent] = useState("");
+  const [validation, setValidation] = useState(false);
+
   const router = useRouter();
   const {category} = router.query;
   console.log(category);
@@ -18,7 +22,7 @@ export default function category() {
     // const response = await fetch(`${API_ENDPOINT}?${queryParams.toString()}`, {
     
     const response = await fetch(
-      API_ENDPOINT + "/todolist" + `?category=${category}&completed=false`,
+      API_ENDPOINT + "/todolist" + `?category=${category}&completed=false&userid=${userId}`,
       {
         method: "GET",
         headers: { "Authorization": "Bearer " + token },
@@ -43,6 +47,44 @@ export default function category() {
     }
     process();
   }, [isLoaded]);
+
+  function handleContentChange(e) {
+    setContent(e.target.value);
+    handleValidation();
+  }
+  function handleValidation() {
+    if (content != "") {
+      setValidation(true);
+    } else {
+      setValidation(false);
+    }
+  }
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    handleValidation();
+    const token = await getToken({ template: "codehooks" });
+    if (validation) {
+      const response = await fetch(API_ENDPOINT + "/todolist", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token,
+        },
+        body: JSON.stringify({
+          content: content,
+          category: category,
+          userid: userId,
+        }),
+      });
+      const data = await response.json();
+      console.log(data);
+      console.log("it's a form submit post todos");
+    }
+    getCategoryData(token);
+    setContent("");
+    setValidation(false);
+  };
   // useEffect(() => {
   //   console.log("we are geting data!");
   //   getCategoryData(token);
@@ -59,6 +101,35 @@ export default function category() {
           All Todos
         </Link>
       </div>
+
+      <form
+        className="bg-blue-200 shadow-md rounded px-8 pt-6 pb-8 mb-4"
+        onSubmit={handleFormSubmit}
+      >
+        <div className="mb-4">
+          <label className="block text-gray-700 text-md font-bold mb-2">
+            Enter the content
+          </label>
+          <input
+            value={content}
+            className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="content"
+            type="text"
+            placeholder="Todo"
+            onChange={handleContentChange}
+          />
+        </div>
+        <label className="block text-gray-700 text-md font-bold mb-2">
+          Category: {category}
+        </label>
+        <button
+          className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+          disabled={!validation}
+          type="submit"
+        >
+          Add todo
+        </button>
+      </form>
 
       {loading ? (
         <span>LOADING...</span>

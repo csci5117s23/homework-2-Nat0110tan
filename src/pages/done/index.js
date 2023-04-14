@@ -3,17 +3,40 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import TodoItem from "@/components/todolist";
 import { useAuth } from "@clerk/nextjs";
-
+import CatesFilter from "@/components/catesFilter";
 export default function Done() {
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState(new Set(["urgent"]));
   const { isLoaded, userId, sessionId, getToken } = useAuth();
+  const [donecates, setDoneCates] = useState(new Set(["urgent"]));
   const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
   const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+  const fetchCates = async (token) => {
+    console.log("where is cates?");
+    const response = await fetch(
+      API_ENDPOINT + "/cateslist?completed=true&userid=" + userId,
+      {
+        method: "GET",
+        headers: { Authorization: "Bearer " + token },
+      }
+    );
+    const data = await response.json();
+    console.log("categories before combving");
+    console.log(categories);
+    const catesSet = new Set(data.map((item) => item.cates));
+    console.log(catesSet);
+    const newSet = new Set([...catesSet, ...categories]);
+    console.log(newSet);
+    setCategories(newSet);
+    console.log("categories after combiune");
+    console.log(categories);
+    console.log("it's a get todo categories get request todos");
+  };
 
   const fetchData = async (token) => {
     const response = await fetch(
-      API_ENDPOINT + "/todolist" + "?completed=true",
+      API_ENDPOINT + "/todolist" + "?completed=true&userid="+userId,
       {
         method: "GET",
         headers: { "Authorization": "Bearer " + token },
@@ -21,15 +44,18 @@ export default function Done() {
     );
     const data = await response.json();
     console.log("this is a get request for done");
+    const catesSet = new Set(data.map((item) => item.category));
     // update state -- configured earlier.
     setItems(data);
     setLoading(false);
+    setDoneCates(catesSet);
   };
   useEffect(() => {
     async function process() {
       if (userId) {
         const token = await getToken({ template: "codehooks" });
         fetchData(token);
+        fetchCates(token);
       }
     }
     process();
@@ -54,12 +80,11 @@ export default function Done() {
         ) : (
           <>
             <h1>Awesome! Here are what you've finished🤩</h1>
-            <Link
-              href={"/done/option 2"}
-              className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-            >
-              Filter by category Option 2
-            </Link>
+            {Array.from(donecates).map((cate) => (
+              <>
+                <CatesFilter cate={cate} fetchCates={fetchCates} type="done" />
+              </>
+            ))}
 
             {items.map((item) => (
               <TodoItem

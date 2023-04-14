@@ -62,6 +62,7 @@ export default function Item() {
         _id: data._id,
         createdOn: data.createdOn,
         completed: data.completed,
+        userid: userId,
       }),
     });
     setIsEditing(false);
@@ -88,6 +89,7 @@ export default function Item() {
         createdOn: data.createdOn,
         _id: data.id,
         completed: true,
+        userid: userId,
       }),
     });
     getItem(token);

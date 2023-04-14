@@ -16,7 +16,7 @@ export default function doneCategory() {
   const getCategoryData = async (token) => {
     // const response = await fetch(`${API_ENDPOINT}?${queryParams.toString()}`, {
     const response = await fetch(
-      API_ENDPOINT + "/todolist" + `?category=${category}&completed=true`,
+      API_ENDPOINT + "/todolist" + `?category=${category}&completed=true&userid=${userId}`,
       {
         method: "GET",
         headers: { "Authorization": "Bearer " + token },

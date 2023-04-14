@@ -9,12 +9,12 @@ export default function Todo() {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("urgent");
   const { isLoaded, userId, sessionId, getToken } = useAuth();
+  const [todocates, setTodoCates] = useState(new Set(["urgent"]));
   console.log("default category");
   console.log(category);
-  const [categories, setCategories] = useState(new Set());
+  const [categories, setCategories] = useState(new Set(["urgent"]));
 
-  // console.log(categories);
-    console.log("categories initial");
+  console.log("categories initial");
   const [newCategory, setNewCategory] = useState("");
   const [validation, setValidation] = useState(false);
 
@@ -25,37 +25,48 @@ export default function Todo() {
   const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
   const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
-
+  console.log(userId);
 
   const fetchCates = async (token) =>{
-    const response = await fetch(API_ENDPOINT + "/cateslist", {
+    console.log("where is cates?");
+    const response = await fetch(API_ENDPOINT + "/cateslist?userid=" + userId, {
       method: "GET",
       headers: { "Authorization": "Bearer " + token },
     });
     const data = await response.json();
     console.log("categories before combving");
     console.log(categories);
+    console.log(data);
     const catesSet = new Set(data.map(item => item.cates))
-    console.log(catesSet);
+    console.log("do you really get anything?");
+    console.log("this is the data szet"+catesSet);
     const newSet = new Set([...catesSet, ...categories]);
+    console.log(newSet);
     setCategories(newSet);
     console.log("categories after combiune");
     console.log(categories);
     console.log("it's a get todo categories get request todos");
   }
   const fetchData = async (token) => {
-    // const response = await fetch(`${API_ENDPOINT}?${queryParams.toString()}`, {
+
     const response = await fetch(
-      API_ENDPOINT + "/todolist" + "?completed=false",
+      API_ENDPOINT + "/todolist" + "?completed=false&userid="+userId,
       {
         method: "GET",
         headers: { "Authorization": "Bearer " + token },
       }
     );
     const data = await response.json();
-    // update state -- configured earlier.
+
     setItems(data);
     setLoading(false);
+    
+    const catesSet = new Set(data.map((item) => item.category));
+    console.log("hey");
+    console.log(catesSet);
+    console.log("rthis is the todo cates"+catesSet);
+    setTodoCates(catesSet);
+    console.log(todocates);
     console.log("it's a get uncompleted todo get request todos");
   };
 
@@ -64,26 +75,23 @@ export default function Todo() {
       if (userId) {
         const token = await getToken({ template: "codehooks" });
         fetchData(token);
+        console.log("fetching cates");
         fetchCates(token);
       }
     }
     process();
   }, [isLoaded]);
 
-  // useEffect(() => {
-  //   fetchData();
-  //   fetchCates();
-  // }, []);
 
   const NewCatesPost = async () =>{
     const token = await getToken({ template: "codehooks" });
-    const response = await fetch(API_ENDPOINT + "/cateslist", {
+    const response = await fetch(API_ENDPOINT + "/cateslist"+"?userid="+userId, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer " + token
       },
-      body: JSON.stringify({ cates: newCategory }),
+      body: JSON.stringify({ cates: newCategory , userid: userId}),
     });
     setCategories(newCategory);
     console.log("it's a post new todo categories get request todos");
@@ -103,6 +111,7 @@ export default function Todo() {
 
   function handleCategoryChange(e) {
     setCategory(e.target.value);
+    console.log(category);
   }
 
   const handleNewCategoryChange = (event) => {
@@ -130,7 +139,7 @@ export default function Todo() {
           "Content-Type": "application/json",
           "Authorization": "Bearer " + token,
         },
-        body: JSON.stringify({ content: content, category: category }),
+        body: JSON.stringify({ content: content, category: category, userid: userId }),
       });
       const data = await response.json();
       console.log(data);
@@ -171,9 +180,10 @@ export default function Todo() {
           <div className="mb-2 inline-block relative">
             <select
               value={category}
-              onChange={handleCategoryChange}
+              placeholder="category"
               className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-            >
+              onChange={handleCategoryChange}
+           >
               {Array.from(categories).map((cate) => (
                 <>
                   <option value={cate}>{cate}</option>
@@ -221,9 +231,9 @@ export default function Todo() {
             >
               Check Done
             </Link>
-            {Array.from(categories).map((cate) => (
+            {Array.from(todocates).map((cate) => (
               <>
-                <CatesFilter cate={cate} fetchCates={fetchCates} />
+                <CatesFilter cate={cate} fetchCates={fetchCates} type="todos" />
               </>
             ))}
 
