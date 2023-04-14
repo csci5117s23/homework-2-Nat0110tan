@@ -17,10 +17,12 @@ const todoYup = object({
   category: string().required(),
   createdOn: date().default(() => new Date()),
   completed: bool().required().default(false),
+  userid: string().required()
 });
 
 const catesYup = object({
-  cates: string().required()
+  cates: string().required(),
+  userid: string().required()
 })
 
 
