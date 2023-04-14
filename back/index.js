@@ -19,6 +19,11 @@ const todoYup = object({
   completed: bool().required().default(false),
 });
 
+const catesYup = object({
+  cates: string().required()
+})
+
+
 const userAuth = async (req, res, next) => {
   try {
     const { authorization } = req.headers;
@@ -35,8 +40,10 @@ const userAuth = async (req, res, next) => {
 };
 app.use(userAuth);
 
+
+
 // Use Crudlify to create a REST API for any collection
-crudlify(app, { todolist: todoYup });
+crudlify(app, { todolist: todoYup, cateslist: catesYup});
 
 // bind to serverless runtime
 export default app.init();

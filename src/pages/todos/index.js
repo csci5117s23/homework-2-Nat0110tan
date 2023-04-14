@@ -2,15 +2,19 @@
 import React, { useState, useEffect } from "react";
 import TodoItem from "@/components/todolist";
 import Link from "next/link";
+import CatesFilter from "@/components/catesFilter";
+import { useAuth } from "@clerk/nextjs";
+
 export default function Todo() {
   const [content, setContent] = useState("");
-  // const [category, setCategory] = useState([]);
-  const [category, setCategory] = useState("Option 1");
-  // const [categories, setCategories] = useState([
-  //   "Option 1",
-  //   "Option 2",
-  //   "Option 3",
-  // ]);
+  const [category, setCategory] = useState("urgent");
+  const { isLoaded, userId, sessionId, getToken } = useAuth();
+  console.log("default category");
+  console.log(category);
+  const [categories, setCategories] = useState(new Set());
+
+  // console.log(categories);
+    console.log("categories initial");
   const [newCategory, setNewCategory] = useState("");
   const [validation, setValidation] = useState(false);
 
@@ -21,22 +25,69 @@ export default function Todo() {
   const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
   const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
-  const fetchData = async () => {
-    // const response = await fetch(`${API_ENDPOINT}?${queryParams.toString()}`, {
-    const response = await fetch(API_ENDPOINT + "?completed=false", {
+
+
+  const fetchCates = async (token) =>{
+    const response = await fetch(API_ENDPOINT + "/cateslist", {
       method: "GET",
-      headers: { "x-apikey": API_KEY },
+      headers: { "Authorization": "Bearer " + token },
     });
+    const data = await response.json();
+    console.log("categories before combving");
+    console.log(categories);
+    const catesSet = new Set(data.map(item => item.cates))
+    console.log(catesSet);
+    const newSet = new Set([...catesSet, ...categories]);
+    setCategories(newSet);
+    console.log("categories after combiune");
+    console.log(categories);
+    console.log("it's a get todo categories get request todos");
+  }
+  const fetchData = async (token) => {
+    // const response = await fetch(`${API_ENDPOINT}?${queryParams.toString()}`, {
+    const response = await fetch(
+      API_ENDPOINT + "/todolist" + "?completed=false",
+      {
+        method: "GET",
+        headers: { "Authorization": "Bearer " + token },
+      }
+    );
     const data = await response.json();
     // update state -- configured earlier.
     setItems(data);
     setLoading(false);
     console.log("it's a get uncompleted todo get request todos");
   };
-  useEffect(() => {
-    fetchData();
-  }, []);
 
+  useEffect(() => {
+    async function process() {
+      if (userId) {
+        const token = await getToken({ template: "codehooks" });
+        fetchData(token);
+        fetchCates(token);
+      }
+    }
+    process();
+  }, [isLoaded]);
+
+  // useEffect(() => {
+  //   fetchData();
+  //   fetchCates();
+  // }, []);
+
+  const NewCatesPost = async () =>{
+    const token = await getToken({ template: "codehooks" });
+    const response = await fetch(API_ENDPOINT + "/cateslist", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({ cates: newCategory }),
+    });
+    setCategories(newCategory);
+    console.log("it's a post new todo categories get request todos");
+  }
   function handleContentChange(e) {
     setContent(e.target.value);
     handleValidation();
@@ -59,38 +110,40 @@ export default function Todo() {
     setCategory(newCategory);
   };
 
-  // const handleAddCategory = (event) => {
-
-  //   if (newCategory && !categories.includes(newCategory)) {
-  //     setCategories([...categories, newCategory]);
-  //     setCategory(newCategory);
-  //     // setNewCategory("");
-  //   }
-  // };
+  const handleNewCateSubmit = (e) =>{
+    NewCatesPost();
+    console.log("new cate posted");
+    fetchCates();
+    console.log("it should get");
+    setNewCategory("");
+  }
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     handleValidation();
     setNewItem({ content: content, category: category });
+    const token = await getToken({ template: "codehooks" });
     if (validation) {
-      const response = await fetch(API_ENDPOINT, {
+      const response = await fetch(API_ENDPOINT + "/todolist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-apikey": API_KEY,
+          "Authorization": "Bearer " + token,
         },
         body: JSON.stringify({ content: content, category: category }),
       });
       const data = await response.json();
+      console.log(data);
       console.log("it's a form submit post todos");
     }
-    fetchData();
-    setCategory("Option 1");
+    fetchData(token);
+    setCategory("preferred");
     setContent("");
     setValidation(false);
     setNewItem(null);
     setNewCategory("");
   };
+  console.log(categories);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -113,7 +166,7 @@ export default function Todo() {
             />
           </div>
           <label className="block text-gray-700 text-md font-bold mb-2">
-            Enter the content
+            Choose the category
           </label>
           <div className="mb-2 inline-block relative">
             <select
@@ -121,11 +174,20 @@ export default function Todo() {
               onChange={handleCategoryChange}
               className="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
             >
-              <option value="Option 1">Option 1</option>
-              <option value="Option 2">Option 2</option>
-              <option value="Option 3">Option 3</option>
+              {Array.from(categories).map((cate) => (
+                <>
+                  <option value={cate}>{cate}</option>
+                </>
+              ))}
             </select>
           </div>
+          <button
+            className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+            disabled={!validation}
+            type="submit"
+          >
+            Add todo
+          </button>
           <div className="mb-4">
             <label className="block text-gray-700 text-md font-bold mb-2">
               Add new category
@@ -139,12 +201,13 @@ export default function Todo() {
               placeholder="Enter category"
             />
           </div>
+
           <button
             className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-            disabled={!validation}
-            type="submit"
+            disabled={!newCategory}
+            onClick={handleNewCateSubmit}
           >
-            Add
+            Add category
           </button>
         </form>
 
@@ -158,14 +221,18 @@ export default function Todo() {
             >
               Check Done
             </Link>
+            {Array.from(categories).map((cate) => (
+              <>
+                <CatesFilter cate={cate} fetchCates={fetchCates} />
+              </>
+            ))}
 
-            <Link
+            {/* <Link
               href={"/todos/Option 1"}
               className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
             >
               Filter by category Option 1
-            </Link>
-            <p>All uncompleted Todos:</p>
+            </Link> */}
             {items.map((item) => (
               <TodoItem
                 key={item.id}

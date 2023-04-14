@@ -2,24 +2,29 @@ import Link from "next/link";
 import { useState, useEffect} from "react";
 import { useRouter } from "next/router";
 import TodoItem from "@/components/todolist";
-
+import { useAuth, UserButton, SignIn } from "@clerk/nextjs";
 export default function category() {
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const {category} = router.query;
   console.log(category);
+  const { isLoaded, userId, sessionId, getToken } = useAuth();
 
   const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
   const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
-  const getCategoryData = async () => {
+  const getCategoryData = async (token) => {
     // const response = await fetch(`${API_ENDPOINT}?${queryParams.toString()}`, {
-    const response = await fetch(API_ENDPOINT + `?category=${category}&completed=false`, {
-      method: "GET",
-      headers: { "x-apikey": API_KEY },
-    });
-    console.log(API_ENDPOINT + `?category=${category}`);
+    
+    const response = await fetch(
+      API_ENDPOINT + "/todolist" + `?category=${category}&completed=false`,
+      {
+        method: "GET",
+        headers: { "Authorization": "Bearer " + token },
+      }
+    );
+    console.log(API_ENDPOINT + "/todolist" + `?category=${category}`);
     const data = await response.json();
     console.log(data);
     // update state -- configured earlier.
@@ -27,10 +32,21 @@ export default function category() {
     setLoading(false);
     console.log("it's a get category get request todos");
   };
+
   useEffect(() => {
-    console.log("we are geting data!");
-    getCategoryData();
-  }, []);
+    async function process() {
+      if (userId) {
+        const token = await getToken({ template: "codehooks" });
+        console.log("we are geting data!");
+        getCategoryData(token);
+      }
+    }
+    process();
+  }, [isLoaded]);
+  // useEffect(() => {
+  //   console.log("we are geting data!");
+  //   getCategoryData(token);
+  // }, []);
   console.log(items);
 
   return (

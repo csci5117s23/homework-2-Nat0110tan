@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useAuth, UserButton, SignIn } from "@clerk/nextjs";
 export default function TodoItem({
   content,
   category,
@@ -7,26 +8,29 @@ export default function TodoItem({
   completed,
   fetchData,
 }) {
-  const API_ENDPOINT = "https://back-x5hb.api.codehooks.io/dev/todolist";
-  const API_KEY = "bed32666-b5b7-4998-97e1-21046bd9cfd2";
 
+  const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
+  const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+  const { isLoaded, userId, sessionId, getToken } = useAuth();
   const handleDeleteButton = async (e) => {
-    const url = API_ENDPOINT + "/" + id;
+    const token = await getToken({ template: "codehooks" });
+    const url = API_ENDPOINT + "/todolist" + "/"+id;
     await fetch(url, {
       method: "DELETE",
-      headers: { "x-apikey": API_KEY },
+      headers: { "Authorization": "Bearer " + token },
     });
-    fetchData();
+    fetchData(token);
   };
 
   const handleDoneButton = async (e) => {
     // e.preventDefault();
-    const url = API_ENDPOINT + "/" + id;
+    const token = await getToken({ template: "codehooks" });
+    const url = API_ENDPOINT + "/todolist" + "/" + id;
     await fetch(url, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        "x-apikey": API_KEY,
+        "Authorization": "Bearer " + token,
       },
       body: JSON.stringify({
         content: content,
@@ -36,7 +40,7 @@ export default function TodoItem({
         completed: true,
       }),
     });
-    fetchData();
+    fetchData(token);
   };
 
   const isCompleted = completed;

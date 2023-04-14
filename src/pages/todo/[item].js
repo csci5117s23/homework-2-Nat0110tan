@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useState, useEffect} from "react";
 import { useRouter } from "next/router";
-
+import { useAuth, UserButton, SignIn } from "@clerk/nextjs";
 export default function Item() {
   const router = useRouter();
   const { item } = router.query;
@@ -10,20 +10,32 @@ export default function Item() {
   const [data, setData] = useState({})
   const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
   const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
-  const url = API_ENDPOINT + "/" + item;
-  const getItem = async () => {
+  const { isLoaded, userId, sessionId, getToken } = useAuth();
+  const url = API_ENDPOINT + "/todolist" + "/" + item;
+  const getItem = async (token) => {
     // const url = process.env.API_ENDPOINT + "/" + id;
+    
     const response = await fetch(url, {
       method: "GET",
-      headers: { "x-apikey": API_KEY}
+      headers: { "Authorization": "Bearer " + token },
     });
     const re = await response.json();
     setData(re);
   }
 
+  // useEffect(() => {
+  //   getItem();
+  // }, []);
   useEffect(() => {
-    getItem();
-  }, []);
+    async function process() {
+      if (userId) {
+        const token = await getToken({ template: "codehooks" });
+        getItem(token);
+        console.log("we are geting data!");
+      }
+    }
+    process();
+  }, [isLoaded]);
 
   const handleEdit = () => {
     console.log("clicked on edit!");
@@ -37,11 +49,12 @@ export default function Item() {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    const token = await getToken({ template: "codehooks" });
     const response = await fetch(url, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        "x-apikey": API_KEY,
+        "Authorization": "Bearer " + token,
       },
       body: JSON.stringify({
         category: data.category,
@@ -52,7 +65,7 @@ export default function Item() {
       }),
     });
     setIsEditing(false);
-    getItem();
+    getItem(token);
   };
 
   const handleContentChange = (event) => {
@@ -61,12 +74,13 @@ export default function Item() {
 
   const handleDoneButton = async (e) => {
     // e.preventDefault();
-    const url = API_ENDPOINT + "/" + item;
+    const token = await getToken({ template: "codehooks" });
+    const url = API_ENDPOINT + "/todolist" + "/" + item;
     await fetch(url, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        "x-apikey": API_KEY,
+        "Authorization": "Bearer " + token,
       },
       body: JSON.stringify({
         content: data.content,
@@ -76,7 +90,7 @@ export default function Item() {
         completed: true,
       }),
     });
-    getItem();
+    getItem(token);
   };
 
   const isCompleted = data.completed;

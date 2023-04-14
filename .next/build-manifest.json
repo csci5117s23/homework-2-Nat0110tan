@@ -25,16 +25,6 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/done": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/done.js"
-    ],
-    "/done/[category]": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/done/[category].js"
-    ],
     "/todo/[item]": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
