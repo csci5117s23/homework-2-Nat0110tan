@@ -12,7 +12,7 @@ export default function category() {
 
   const router = useRouter();
   const {category} = router.query;
-  console.log(category);
+
   const { isLoaded, userId, sessionId, getToken } = useAuth();
 
   const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
@@ -28,7 +28,6 @@ export default function category() {
     );
     console.log(API_ENDPOINT + "/todolist" + `?category=${category}`);
     const data = await response.json();
-    console.log(data);
     setItems(data);
     setLoading(false);
     console.log("it's a get category get request todos");
@@ -38,7 +37,6 @@ export default function category() {
     async function process() {
       if (userId) {
         const token = await getToken({ template: "codehooks" });
-        console.log("we are geting data!");
         getCategoryData(token);
       }
     }
