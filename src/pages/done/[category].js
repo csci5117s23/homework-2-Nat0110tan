@@ -11,10 +11,9 @@ export default function doneCategory() {
   console.log(category);
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
   const getCategoryData = async (token) => {
-    // const response = await fetch(`${API_ENDPOINT}?${queryParams.toString()}`, {
+
     const response = await fetch(
       API_ENDPOINT + "/todolist" + `?category=${category}&completed=true&userid=${userId}`,
       {
@@ -23,17 +22,11 @@ export default function doneCategory() {
       }
     );
     const data = await response.json();
-    console.log(data);
-    // update state -- configured earlier.
     setItems(data);
     setLoading(false);
     console.log("it's a get category get request todos");
   };
-  // useEffect(() => {
-  //   console.log("we are geting data!");
-  //   getCategoryData();
-  // }, []);
-  // console.log(items);
+
   useEffect(() => {
     async function process() {
       if (userId) {

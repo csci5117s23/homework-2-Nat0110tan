@@ -19,8 +19,6 @@ export default function category() {
   const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
   const getCategoryData = async (token) => {
-    // const response = await fetch(`${API_ENDPOINT}?${queryParams.toString()}`, {
-    
     const response = await fetch(
       API_ENDPOINT + "/todolist" + `?category=${category}&completed=false&userid=${userId}`,
       {
@@ -31,7 +29,6 @@ export default function category() {
     console.log(API_ENDPOINT + "/todolist" + `?category=${category}`);
     const data = await response.json();
     console.log(data);
-    // update state -- configured earlier.
     setItems(data);
     setLoading(false);
     console.log("it's a get category get request todos");
@@ -78,18 +75,11 @@ export default function category() {
         }),
       });
       const data = await response.json();
-      console.log(data);
-      console.log("it's a form submit post todos");
     }
     getCategoryData(token);
     setContent("");
     setValidation(false);
   };
-  // useEffect(() => {
-  //   console.log("we are geting data!");
-  //   getCategoryData(token);
-  // }, []);
-  console.log(items);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">

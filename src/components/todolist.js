@@ -10,7 +10,6 @@ export default function TodoItem({
 }) {
 
   const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const handleDeleteButton = async (e) => {
     const token = await getToken({ template: "codehooks" });
@@ -23,7 +22,6 @@ export default function TodoItem({
   };
 
   const handleDoneButton = async (e) => {
-    // e.preventDefault();
     const token = await getToken({ template: "codehooks" });
     const url = API_ENDPOINT + "/todolist" + "/" + id;
     await fetch(url, {

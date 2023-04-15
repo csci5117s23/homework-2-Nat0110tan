@@ -10,11 +10,9 @@ export default function Todo() {
   const [category, setCategory] = useState("urgent");
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const [todocates, setTodoCates] = useState(new Set(["urgent"]));
-  console.log("default category");
-  console.log(category);
+
   const [categories, setCategories] = useState(new Set(["urgent"]));
 
-  console.log("categories initial");
   const [newCategory, setNewCategory] = useState("");
   const [validation, setValidation] = useState(false);
 
@@ -23,9 +21,7 @@ export default function Todo() {
   const [newItem, setNewItem] = useState(null);
 
   const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
-  console.log(userId);
 
   const fetchCates = async (token) =>{
     console.log("where is cates?");
@@ -34,18 +30,9 @@ export default function Todo() {
       headers: { "Authorization": "Bearer " + token },
     });
     const data = await response.json();
-    console.log("categories before combving");
-    console.log(categories);
-    console.log(data);
     const catesSet = new Set(data.map(item => item.cates))
-    console.log("do you really get anything?");
-    console.log("this is the data szet"+catesSet);
     const newSet = new Set([...catesSet, ...categories]);
-    console.log(newSet);
     setCategories(newSet);
-    console.log("categories after combiune");
-    console.log(categories);
-    console.log("it's a get todo categories get request todos");
   }
   const fetchData = async (token) => {
 
@@ -57,17 +44,10 @@ export default function Todo() {
       }
     );
     const data = await response.json();
-
     setItems(data);
     setLoading(false);
-    
     const catesSet = new Set(data.map((item) => item.category));
-    console.log("hey");
-    console.log(catesSet);
-    console.log("rthis is the todo cates"+catesSet);
     setTodoCates(catesSet);
-    console.log(todocates);
-    console.log("it's a get uncompleted todo get request todos");
   };
 
   useEffect(() => {
@@ -75,7 +55,6 @@ export default function Todo() {
       if (userId) {
         const token = await getToken({ template: "codehooks" });
         fetchData(token);
-        console.log("fetching cates");
         fetchCates(token);
       }
     }
@@ -94,7 +73,6 @@ export default function Todo() {
       body: JSON.stringify({ cates: newCategory , userid: userId}),
     });
     setCategories(newCategory);
-    console.log("it's a post new todo categories get request todos");
   }
   function handleContentChange(e) {
     setContent(e.target.value);
@@ -121,9 +99,7 @@ export default function Todo() {
 
   const handleNewCateSubmit = (e) =>{
     NewCatesPost();
-    console.log("new cate posted");
     fetchCates();
-    console.log("it should get");
     setNewCategory("");
   }
 
@@ -142,8 +118,6 @@ export default function Todo() {
         body: JSON.stringify({ content: content, category: category, userid: userId }),
       });
       const data = await response.json();
-      console.log(data);
-      console.log("it's a form submit post todos");
     }
     fetchData(token);
     setCategory("preferred");
@@ -152,7 +126,7 @@ export default function Todo() {
     setNewItem(null);
     setNewCategory("");
   };
-  console.log(categories);
+
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">

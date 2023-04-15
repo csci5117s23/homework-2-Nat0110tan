@@ -4,7 +4,7 @@ import { ClerkProvider, SignedIn, SignedOut, SignIn, UserButton } from "@clerk/n
 export default function App({ Component, pageProps }) {
   
   return (
-    // <div className="flex h-screen items-center justify-center">
+    <div className="flex items-center justify-center">
       <ClerkProvider {...pageProps}>
         <SignedIn>
           <UserButton />
@@ -14,6 +14,6 @@ export default function App({ Component, pageProps }) {
           <SignIn />
         </SignedOut>
       </ClerkProvider>
-    // </div>
+    </div>
   );
 }

@@ -11,9 +11,9 @@ export default function Done() {
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const [donecates, setDoneCates] = useState(new Set(["urgent"]));
   const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+
   const fetchCates = async (token) => {
-    console.log("where is cates?");
+
     const response = await fetch(
       API_ENDPOINT + "/cateslist?completed=true&userid=" + userId,
       {
@@ -22,16 +22,12 @@ export default function Done() {
       }
     );
     const data = await response.json();
-    console.log("categories before combving");
-    console.log(categories);
     const catesSet = new Set(data.map((item) => item.cates));
-    console.log(catesSet);
+
     const newSet = new Set([...catesSet, ...categories]);
-    console.log(newSet);
+
     setCategories(newSet);
-    console.log("categories after combiune");
-    console.log(categories);
-    console.log("it's a get todo categories get request todos");
+
   };
 
   const fetchData = async (token) => {
@@ -43,9 +39,9 @@ export default function Done() {
       }
     );
     const data = await response.json();
-    console.log("this is a get request for done");
+
     const catesSet = new Set(data.map((item) => item.category));
-    // update state -- configured earlier.
+
     setItems(data);
     setLoading(false);
     setDoneCates(catesSet);
@@ -60,10 +56,7 @@ export default function Done() {
     }
     process();
   }, [isLoaded]);
-  // useEffect(() => {
-  //   fetchData(token);
-  // }, []);
-  // console.log(items);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="grid gap-16 grid-cols-fluid">

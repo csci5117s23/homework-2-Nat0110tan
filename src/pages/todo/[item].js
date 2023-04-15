@@ -12,9 +12,8 @@ export default function Item() {
   const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const url = API_ENDPOINT + "/todolist" + "/" + item;
+
   const getItem = async (token) => {
-    // const url = process.env.API_ENDPOINT + "/" + id;
-    
     const response = await fetch(url, {
       method: "GET",
       headers: { "Authorization": "Bearer " + token },
@@ -23,9 +22,6 @@ export default function Item() {
     setData(re);
   }
 
-  // useEffect(() => {
-  //   getItem();
-  // }, []);
   useEffect(() => {
     async function process() {
       if (userId) {
@@ -74,7 +70,7 @@ export default function Item() {
   };
 
   const handleDoneButton = async (e) => {
-    // e.preventDefault();
+
     const token = await getToken({ template: "codehooks" });
     const url = API_ENDPOINT + "/todolist" + "/" + item;
     await fetch(url, {
