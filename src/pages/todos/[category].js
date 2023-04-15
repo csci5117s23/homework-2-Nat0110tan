@@ -2,7 +2,13 @@ import Link from "next/link";
 import { useState, useEffect} from "react";
 import { useRouter } from "next/router";
 import TodoItem from "@/components/todolist";
-import { useAuth, UserButton, SignIn } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  useAuth,
+  SignInButton,
+  UserButton,
+} from "@clerk/nextjs";
 export default function category() {
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,7 +34,7 @@ export default function category() {
     );
     console.log(API_ENDPOINT + "/todolist" + `?category=${category}`);
     const data = await response.json();
-    setItems(data);
+    setItems(data.sort((a, b) => (a.createdOn <= b.createdOn ? 1 : -1)));
     setLoading(false);
     console.log("it's a get category get request todos");
   };
@@ -80,63 +86,75 @@ export default function category() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div>
-        <Link
-          href={"/todos"}
-          className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-        >
-          All Todos
-        </Link>
-      </div>
+    <>
+      <SignedIn>
+        <UserButton />
+        <main className="flex min-h-screen flex-col items-center justify-between p-24">
+          <div>
+            <Link
+              href={"/todos"}
+              className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+            >
+              All Todos
+            </Link>
+          </div>
 
-      <form
-        className="bg-blue-200 shadow-md rounded px-8 pt-6 pb-8 mb-4"
-        onSubmit={handleFormSubmit}
-      >
-        <div className="mb-4">
-          <label className="block text-gray-700 text-md font-bold mb-2">
-            Enter the content
-          </label>
-          <input
-            value={content}
-            className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            id="content"
-            type="text"
-            placeholder="Todo"
-            onChange={handleContentChange}
-          />
-        </div>
-        <label className="block text-gray-700 text-md font-bold mb-2">
-          Category: {category}
-        </label>
-        <button
-          className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-          disabled={!validation}
-          type="submit"
-        >
-          Add todo
-        </button>
-      </form>
+          <form
+            className="bg-blue-200 shadow-md rounded px-8 pt-6 pb-8 mb-4"
+            onSubmit={handleFormSubmit}
+          >
+            <div className="mb-4">
+              <label className="block text-gray-700 text-md font-bold mb-2">
+                Enter the content
+              </label>
+              <input
+                value={content}
+                className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="content"
+                type="text"
+                placeholder="Todo"
+                onChange={handleContentChange}
+              />
+            </div>
+            <label className="block text-gray-700 text-md font-bold mb-2">
+              Category: {category}
+            </label>
+            <button
+              className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+              disabled={!validation}
+              type="submit"
+            >
+              Add todo
+            </button>
+          </form>
 
-      {loading ? (
-        <span>LOADING...</span>
-      ) : (
-        <>
-          <p>{`All uncompleted ${category} Todos:`}</p>
-          {items.map((item) => (
-            <TodoItem
-              key={item._id}
-              content={item.content}
-              category={item.category}
-              createdOn={item.createdOn}
-              id={item._id}
-              completed={item.completed}
-              fetchData={getCategoryData}
-            />
-          ))}
-        </>
-      )}
-    </main>
+          {loading ? (
+            <span>LOADING...</span>
+          ) : (
+            <>
+              <p>{`All uncompleted ${category} Todos:`}</p>
+              {items.map((item) => (
+                <TodoItem
+                  key={item._id}
+                  content={item.content}
+                  category={item.category}
+                  createdOn={item.createdOn}
+                  id={item._id}
+                  completed={item.completed}
+                  fetchData={getCategoryData}
+                />
+              ))}
+            </>
+          )}
+        </main>
+      </SignedIn>
+      <SignedOut>
+        <h1>Please signin</h1>
+        <SignInButton
+          className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+          redirectUrl="/todos"
+        />
+      </SignedOut>
+    </>
   );
 }

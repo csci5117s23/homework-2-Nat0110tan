@@ -2,7 +2,13 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import TodoItem from "@/components/todolist";
-import { useAuth } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  useAuth,
+  SignInButton,
+  UserButton,
+} from "@clerk/nextjs";
 export default function doneCategory() {
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,16 +28,14 @@ export default function doneCategory() {
       }
     );
     const data = await response.json();
-    setItems(data);
+    setItems(data.sort((a, b) => (a.createdOn <= b.createdOn ? 1 : -1)));
     setLoading(false);
-    console.log("it's a get category get request todos");
   };
 
   useEffect(() => {
     async function process() {
       if (userId) {
         const token = await getToken({ template: "codehooks" });
-        console.log("we are geting data!");
         getCategoryData(token);
       }
     }
@@ -39,34 +43,46 @@ export default function doneCategory() {
   }, [isLoaded]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div>
-        <Link
-          href={"/todos"}
-          className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-        >
-          All Todos
-        </Link>
-      </div>
+    <>
+      <SignedIn>
+        <UserButton />
+        <main className="flex min-h-screen flex-col items-center justify-between p-24">
+          <div>
+            <Link
+              href={"/todos"}
+              className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+            >
+              All Todos
+            </Link>
+          </div>
 
-      {loading ? (
-        <span>LOADING...</span>
-      ) : (
-        <>
-          <p>{`All Done Todos with category ${category}:`}</p>
-          {items.map((item) => (
-            <TodoItem
-              key={item._id}
-              content={item.content}
-              category={item.category}
-              createdOn={item.createdOn}
-              id={item._id}
-              completed={item.completed}
-              fetchData={getCategoryData}
-            />
-          ))}
-        </>
-      )}
-    </main>
+          {loading ? (
+            <span>LOADING...</span>
+          ) : (
+            <>
+              <p>{`All Done Todos with category ${category}:`}</p>
+              {items.map((item) => (
+                <TodoItem
+                  key={item._id}
+                  content={item.content}
+                  category={item.category}
+                  createdOn={item.createdOn}
+                  id={item._id}
+                  completed={item.completed}
+                  fetchData={getCategoryData}
+                />
+              ))}
+            </>
+          )}
+        </main>
+      </SignedIn>
+      <SignedOut>
+        <h1>Please signin</h1>
+        <SignInButton
+          className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+          redirectUrl="/todos"
+        />
+      </SignedOut>
+    </>
   );
 }
