@@ -88,7 +88,7 @@ export default function Item() {
   };
 
   const handleContentChange = (event) => {
-    setUpdatedCateContent(event.target.value);
+    setUpdatedContent(event.target.value);
   };
 
   const handleDoneButton = async (e) => {
