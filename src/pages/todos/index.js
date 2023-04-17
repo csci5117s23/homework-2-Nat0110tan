@@ -1,4 +1,4 @@
-"use client";
+
 import React, { useState, useEffect } from "react";
 import TodoItem from "@/components/todolist";
 import Link from "next/link";

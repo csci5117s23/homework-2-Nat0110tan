@@ -1,4 +1,4 @@
-"use client";
+
 import {useEffect } from "react";
 import { SignedIn, SignedOut, SignInButton, useAuth} from "@clerk/nextjs";
 import { useRouter } from "next/router";
