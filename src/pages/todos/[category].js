@@ -10,6 +10,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import Home from "..";
+const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 export default function category() {
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,6 @@ export default function category() {
 
   const { isLoaded, userId, sessionId, getToken } = useAuth();
 
-  const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
   const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
   const getCategoryData = async (token) => {

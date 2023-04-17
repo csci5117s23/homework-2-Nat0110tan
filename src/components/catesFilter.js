@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { useAuth, UserButton, SignIn } from "@clerk/nextjs";
+
+const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 export default function CatesFilter({ cate, fetchCates, id, type}) {
-  const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const handleFilterDelete = async (e) => {
     const token = await getToken({ template: "codehooks" });

@@ -9,13 +9,14 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import Home from "..";
+
+const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 export default function Item() {
   const router = useRouter();
   const { item } = router.query;
   const [isEditing, setIsEditing] = useState(false);
   const [updatedContent, setUpdatedContent] = useState("");
   const [data, setData] = useState({});
-  const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const [isCateEditing, setIsCateEditing] = useState(false);
   const [updatedCateContent, setUpdatedCateContent] = useState("");

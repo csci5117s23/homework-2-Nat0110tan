@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { useAuth, UserButton, SignIn } from "@clerk/nextjs";
+
+const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 export default function TodoItem({
   content,
   category,
@@ -9,7 +11,6 @@ export default function TodoItem({
   fetchData,
 }) {
 
-  const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const handleDeleteButton = async (e) => {
     const token = await getToken({ template: "codehooks" });

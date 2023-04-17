@@ -11,6 +11,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import Home from "..";
+const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
 export default function Todo() {
   const [content, setContent] = useState("");
@@ -26,8 +27,6 @@ export default function Todo() {
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(true);
   const [newItem, setNewItem] = useState(null);
-
-  const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
 
   const fetchCates = async (token) =>{

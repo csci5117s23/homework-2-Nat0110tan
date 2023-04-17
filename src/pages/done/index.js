@@ -11,13 +11,14 @@ import {
 } from "@clerk/nextjs";
 import Home from "..";
 import CatesFilter from "@/components/catesFilter";
+
+const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 export default function Done() {
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState(new Set(["urgent"]));
   const { isLoaded, userId, sessionId, getToken } = useAuth();
   const [donecates, setDoneCates] = useState(new Set(["urgent"]));
-  const API_ENDPOINT = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
   const fetchCates = async (token) => {
 
