@@ -10,6 +10,7 @@ import {
   SignInButton,
   UserButton,
 } from "@clerk/nextjs";
+import Home from "..";
 
 export default function Todo() {
   const [content, setContent] = useState("");
@@ -242,11 +243,7 @@ export default function Todo() {
         </main>
       </SignedIn>
       <SignedOut>
-        <h1>Please signin</h1>
-        <SignInButton
-          className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-          redirectUrl="/todos"
-        />
+        <Home></Home>
       </SignedOut>
     </>
   );

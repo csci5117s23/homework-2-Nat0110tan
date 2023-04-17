@@ -9,6 +9,7 @@ import {
   SignInButton,
   UserButton,
 } from "@clerk/nextjs";
+import Home from "..";
 import CatesFilter from "@/components/catesFilter";
 export default function Done() {
   const [items, setItems] = useState(null);
@@ -108,11 +109,7 @@ export default function Done() {
         </main>
       </SignedIn>
       <SignedOut>
-        <h1>Please signin</h1>
-        <SignInButton
-          className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-          redirectUrl="/todos"
-        />
+        <Home></Home>
       </SignedOut>
     </>
   );

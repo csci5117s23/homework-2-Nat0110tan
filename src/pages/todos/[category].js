@@ -9,6 +9,7 @@ import {
   SignInButton,
   UserButton,
 } from "@clerk/nextjs";
+import Home from "..";
 export default function category() {
   const [items, setItems] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -149,11 +150,7 @@ export default function category() {
         </main>
       </SignedIn>
       <SignedOut>
-        <h1>Please signin</h1>
-        <SignInButton
-          className="text-center bg-blue-400 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-          redirectUrl="/todos"
-        />
+        <Home></Home>
       </SignedOut>
     </>
   );
